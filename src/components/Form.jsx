@@ -2,45 +2,125 @@ import { useState } from "react";
 import { FiAlertCircle } from "react-icons/fi";
 import { AiFillAlert } from "react-icons/ai";
 import jsPDF from "jspdf";
+import validator from "validator";
 
 const Form = ({ onShowRegistered, pdfGenerated }) => {
   const [nameInput, setNameInput] = useState("");
   const [documentIdentity, setDocumentIdentity] = useState("");
   const [selectDocument, setSelectDocument] = useState("");
+  const [direccion, setDireccion] = useState("");
+  const [telephone, setTelephone] = useState("");
+  const [email, setEmail] = useState("");
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
 
   const date = new Date();
   const regex = /[0-9!@#$%^&*()_+{}[\]:;<>,.?~\\/-]/;
   const regexDi = /[a-z!@#$%^&*()_+{}[\]:;<>,.?~\\/-]/;
+  const patron = /^[A-Za-z0-9\s,.-]+$/;
+  const valiEmail = validator.isEmail(email);
 
   const handleChangeName = (eve) => {
     const newNameInput = eve.target.value;
     setNameInput(newNameInput);
-    validateForm(newNameInput, selectDocument, documentIdentity);
+    validateForm(
+      newNameInput,
+      selectDocument,
+      documentIdentity,
+      direccion,
+      telephone,
+      email
+    );
   };
 
   const handleChangeDi = (eve) => {
     const newDocumentIdentity = eve.target.value;
     setDocumentIdentity(newDocumentIdentity);
-    validateForm(nameInput, newDocumentIdentity, selectDocument);
+    validateForm(
+      nameInput,
+      newDocumentIdentity,
+      selectDocument,
+      direccion,
+      telephone,
+      email
+    );
   };
 
   const handleChangeSelect = (eve) => {
     const newSelectDocument = eve.target.value;
     setSelectDocument(newSelectDocument);
-    validateForm(nameInput, newSelectDocument, documentIdentity);
+    validateForm(
+      nameInput,
+      newSelectDocument,
+      documentIdentity,
+      direccion,
+      telephone,
+      email
+    );
+  };
+
+  const handleChangeDireccion = (eve) => {
+    const newAddres = eve.target.value;
+    setDireccion(newAddres);
+    validateForm(
+      nameInput,
+      newAddres,
+      documentIdentity,
+      selectDocument,
+      telephone,
+      email
+    );
+  };
+
+  const handleTelephone = (eve) => {
+    const newTelephone = eve.target.value;
+    setTelephone(newTelephone);
+    validateForm(
+      nameInput,
+      direccion,
+      documentIdentity,
+      newTelephone,
+      selectDocument,
+      email
+    );
+  };
+
+  const handleEmail = (eve) => {
+    const newEmail = eve.target.value;
+    setEmail(newEmail);
+    validateForm(
+      nameInput,
+      direccion,
+      documentIdentity,
+      email,
+      telephone,
+      selectDocument
+    );
   };
 
   const validateForm = (
     newNameInput,
     newSelectDocument,
-    newDocumentIdentity
+    newDocumentIdentity,
+    newAddres,
+    newEmail,
+    newTelephone
   ) => {
     const isNameValid = newNameInput.trim() !== "" && !regex.test(newNameInput);
     const isSelectedDocumentValid = newSelectDocument !== "";
     const isDocumentValid = newDocumentIdentity !== "";
+    const isAddressValid = newAddres.trim() !== "" && patron.test(direccion);
+    const isTelephoneValid =
+      newTelephone.trim() !== "" && regexDi.test(newTelephone);
+    const isEmailValid = newEmail.trim() !== "" && valiEmail;
     setIsSubmitDisabled(
-      !(isNameValid && isSelectedDocumentValid && isDocumentValid)
+      !(
+        isNameValid &&
+        isSelectedDocumentValid &&
+        isDocumentValid &&
+        isAddressValid &&
+        isTelephoneValid &&
+        isEmailValid
+      )
     );
   };
 
@@ -55,7 +135,7 @@ const Form = ({ onShowRegistered, pdfGenerated }) => {
     const doc = new jsPDF();
 
     // Agrega la información del formulario al PDF
-    doc.text("Hoja de Reclamaciones", 10, 10);
+    doc.text("Hoja de Reclamaciones", 80, 10);
     doc.text(
       `Fecha de reclamo: ${date.getDate()}/${
         date.getMonth() + 1
@@ -63,6 +143,8 @@ const Form = ({ onShowRegistered, pdfGenerated }) => {
       10,
       20
     );
+    doc.setFont("helvetica");
+    doc.setFontSize(12);
     doc.text("Datos Generales", 10, 30);
     doc.text("Comercio, Servicios Integrales y Tecnologias S.A.C.", 10, 40);
     doc.text("RUC: 20568033354", 10, 50);
@@ -71,12 +153,15 @@ const Form = ({ onShowRegistered, pdfGenerated }) => {
       10,
       60
     );
-    doc.text("Tus Datos", 10, 70);
-    doc.text("Nombres y Apellidos: ", 10, 70);
-    doc.rect(70, 28, 100, 10);
-    doc.text(nameInput, 72, 35);
-    doc.text("Tipo de documento: " + selectDocument, 10, 90);
-    doc.text("Número de documento: " + documentIdentity, 10, 100);
+    doc.text("Tus Datos", 10, 90);
+    doc.setDrawColor(0);
+    doc.line(10, 91, 30, 91);
+    doc.text("Nombres y Apellidos: " + nameInput, 10, 100);
+    doc.text("Tipo de documento: " + selectDocument, 10, 110);
+    doc.text("Número de documento: " + documentIdentity, 10, 120);
+    doc.text("Domicilio: " + direccion, 10, 130);
+    doc.text("Celular: " + telephone, 10, 140);
+    doc.text("E-mail: " + email, 10, 150);
 
     onShowRegistered(nameInput, doc);
   };
@@ -181,6 +266,81 @@ const Form = ({ onShowRegistered, pdfGenerated }) => {
               </span>
             ) : (
               ""
+            )}
+          </label>
+          <label className="flex flex-col gap-2">
+            <p className="text-slate-700 text-sm">
+              Domicilio <span className="text-red-500">(*)</span>
+            </p>
+            <input
+              className="w-full rounded-md border p-2 text-sm"
+              value={direccion}
+              onChange={handleChangeDireccion}
+            />
+            {direccion.trim() === "" ? (
+              <span
+                className={`text-red-500 text-xs font-semibold flex items-center gap-2`}
+              >
+                <FiAlertCircle />
+                Complete este dato.
+              </span>
+            ) : patron.test(direccion) === false ? (
+              <span className="text-red-500 text-xs font-semibold flex items-center gap-2">
+                <AiFillAlert />
+                No debe contener caracteres especiales.
+              </span>
+            ) : (
+              ""
+            )}
+          </label>
+          <label className="flex flex-col gap-2">
+            <p className="text-slate-700 text-sm">
+              Celular <span className="text-red-500">(*)</span>
+            </p>
+            <input
+              className="w-full rounded-md border p-2 text-sm"
+              value={telephone}
+              onChange={handleTelephone}
+            />
+            {telephone.trim() === "" ? (
+              <span
+                className={`text-red-500 text-xs font-semibold flex items-center gap-2`}
+              >
+                <FiAlertCircle />
+                Complete este dato.
+              </span>
+            ) : regexDi.test(telephone) ? (
+              <span className="text-red-500 text-xs font-semibold flex items-center gap-2">
+                <AiFillAlert />
+                No debe contener letras o caracteres especiales.
+              </span>
+            ) : (
+              ""
+            )}
+          </label>
+          <label className="flex flex-col gap-2">
+            <p className="text-slate-700 text-sm">
+              E-mail <span className="text-red-500">(*)</span>
+            </p>
+            <input
+              className="w-full rounded-md border p-2 text-sm"
+              value={email}
+              onChange={handleEmail}
+            />
+            {email.trim() === "" ? (
+              <span
+                className={`text-red-500 text-xs font-semibold flex items-center gap-2`}
+              >
+                <FiAlertCircle />
+                Complete este dato.
+              </span>
+            ) : valiEmail ? (
+              ""
+            ) : (
+              <span className="text-red-500 text-xs font-semibold flex items-center gap-2">
+                <AiFillAlert />
+                La dirección de correo electrónico no es válida.
+              </span>
             )}
           </label>
         </div>
