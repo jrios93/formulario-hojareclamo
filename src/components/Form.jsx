@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { FiAlertCircle } from "react-icons/fi";
 import { AiFillAlert } from "react-icons/ai";
 import jsPDF from "jspdf";
 import validator from "validator";
@@ -167,7 +166,7 @@ const Form = ({ onShowRegistered, pdfGenerated }) => {
   };
 
   return (
-    <div className="w-1/2 bg-white rounded-md shadow-md flex flex-col p-6 gap-6 font-poppin">
+    <div className="lg:w-1/2 md:w-[5%] sm:w-3/4 bg-white rounded-md shadow-md flex flex-col p-6 gap-6 font-poppin">
       <div>
         <p className="text-xs text-slate-700">
           Fecha de reclamo: {date.getDate()}/{date.getMonth() + 1}/
@@ -185,27 +184,23 @@ const Form = ({ onShowRegistered, pdfGenerated }) => {
           <p>Jr. Manuel Irribaren Nro. 935 Int. F Lima Lima - Surquillo</p>
         </div>
       </div>
-      <form>
-        <div className="flex flex-col gap-4">
+      <form className="">
+        <div className="flex flex-col flex-nowrap gap-8">
           <h3 className="text-lg font-semibold">Tus Datos</h3>
-          <label className="flex flex-col gap-2">
+          <label className="flex flex-col gap-2 relative ">
             <p className="text-slate-700 text-sm">
-              Nombres y Apellidos <span className="text-red-500">(*)</span>
+              Nombres y Apellidos{" "}
+              <span className="text-red-500 font-bold">*</span>
             </p>
             <input
-              className="w-full rounded-md border p-2 text-sm"
+              className="w-full rounded-md border  p-2 text-sm shadow-sm"
               value={nameInput}
               onChange={handleChangeName}
             />
             {nameInput.trim() === "" ? (
-              <span
-                className={`text-red-500 text-xs font-semibold flex items-center gap-2`}
-              >
-                <FiAlertCircle />
-                Complete este dato.
-              </span>
+              ""
             ) : regex.test(nameInput) ? (
-              <span className="text-red-500 text-xs font-semibold flex items-center gap-2">
+              <span className="text-red-500 text-[10px] absolute top-[7em] flex items-center gap-2">
                 <AiFillAlert />
                 No debe contener números o caracteres especiales.
               </span>
@@ -213,79 +208,62 @@ const Form = ({ onShowRegistered, pdfGenerated }) => {
               ""
             )}
           </label>
-
-          <label className="flex flex-col gap-2">
-            <p className="text-slate-700 text-sm">
-              Tipo de documento <span className="text-red-500">(*)</span>
-            </p>
-            <select
-              className="w-full rounded-md border p-2 text-sm"
-              name="tipoDocumento"
-              value={selectDocument}
-              onChange={handleChangeSelect}
-            >
-              <option value="" className="text-sm">
-                -- Selecciona un tipo de documento --
-              </option>
-              <option value="dni" className="text-xs">
-                DNI - DOCUMENTO NACIONAL DE IDENTIDAD
-              </option>
-              <option value="ce" className="text-xs">
-                CE - CARNET DE EXTRANJERIA/PASAPORTE
-              </option>
-            </select>
-            {selectDocument === "" ? (
-              <span className="text-red-500 text-xs font-semibold flex items-center gap-2 ">
-                <FiAlertCircle />
-                Complete este dato.
-              </span>
-            ) : (
-              ""
-            )}
-          </label>
-          <label className="flex flex-col gap-2">
-            <p className="text-slate-700 text-sm">
-              Número de documento <span className="text-red-500">(*)</span>
-            </p>
-            <input
-              className="w-full rounded-md border p-2 text-sm"
-              value={documentIdentity}
-              onChange={handleChangeDi}
-            />
-            {documentIdentity.trim() === "" ? (
-              <span
-                className={`text-red-500 text-xs font-semibold flex items-center gap-2`}
+          <div className="grid items-center grid-cols-2 gap-10">
+            <label className="flex flex-col gap-2 w-full">
+              <p className="text-slate-700 text-sm">
+                Tipo de documento{" "}
+                <span className="text-red-500 font-bold">*</span>
+              </p>
+              <select
+                className="w-full rounded-md border p-2 text-sm shadow-sm"
+                name="tipoDocumento"
+                value={selectDocument}
+                onChange={handleChangeSelect}
               >
-                <FiAlertCircle />
-                Complete este dato.
-              </span>
-            ) : regexDi.test(documentIdentity) ? (
-              <span className="text-red-500 text-xs font-semibold flex items-center gap-2">
-                <AiFillAlert />
-                No debe contener letras o caracteres especiales.
-              </span>
-            ) : (
-              ""
-            )}
-          </label>
-          <label className="flex flex-col gap-2">
+                <option value="" className="text-sm">
+                  -- Selecciona un tipo de documento --
+                </option>
+                <option value="dni" className="text-xs">
+                  DNI - DOCUMENTO NACIONAL DE IDENTIDAD
+                </option>
+                <option value="ce" className="text-xs">
+                  CE - CARNET DE EXTRANJERIA/PASAPORTE
+                </option>
+              </select>
+            </label>
+            <label className="flex flex-col gap-2 w-full relative">
+              <p className="text-slate-700 text-sm">
+                Número de documento{" "}
+                <span className="text-red-500 font-bold">*</span>
+              </p>
+              <input
+                className="w-full rounded-md border p-2 text-sm shadow-sm"
+                value={documentIdentity}
+                onChange={handleChangeDi}
+              />
+              {regexDi.test(documentIdentity) ? (
+                <span className="text-red-500 text-[10px] absolute top-[7em] flex items-center gap-2">
+                  <AiFillAlert />
+                  No debe contener letras o caracteres especiales.
+                </span>
+              ) : (
+                ""
+              )}
+            </label>
+          </div>
+          <label className="flex flex-col gap-2 relative">
             <p className="text-slate-700 text-sm">
-              Domicilio <span className="text-red-500">(*)</span>
+              Domicilio <span className="text-red-500 font-bold">*</span>
             </p>
             <input
-              className="w-full rounded-md border p-2 text-sm"
+              className="w-full rounded-md border p-2 text-sm shadow-sm"
               value={direccion}
               onChange={handleChangeDireccion}
             />
             {direccion.trim() === "" ? (
-              <span
-                className={`text-red-500 text-xs font-semibold flex items-center gap-2`}
-              >
-                <FiAlertCircle />
-                Complete este dato.
-              </span>
+              ""
             ) : patron.test(direccion) === false ? (
-              <span className="text-red-500 text-xs font-semibold flex items-center gap-2">
+              <span className="text-red-500 text-[10px] absolute top-[7em] flex items-center gap-2">
                 <AiFillAlert />
                 No debe contener caracteres especiales.
               </span>
@@ -293,24 +271,19 @@ const Form = ({ onShowRegistered, pdfGenerated }) => {
               ""
             )}
           </label>
-          <label className="flex flex-col gap-2">
+          <label className="flex flex-col gap-2 relative">
             <p className="text-slate-700 text-sm">
-              Celular <span className="text-red-500">(*)</span>
+              Celular <span className="text-red-500 font-bold">*</span>
             </p>
             <input
-              className="w-full rounded-md border p-2 text-sm"
+              className="w-full rounded-md border p-2 text-sm shadow-sm"
               value={telephone}
               onChange={handleTelephone}
             />
             {telephone.trim() === "" ? (
-              <span
-                className={`text-red-500 text-xs font-semibold flex items-center gap-2`}
-              >
-                <FiAlertCircle />
-                Complete este dato.
-              </span>
+              ""
             ) : regexDi.test(telephone) ? (
-              <span className="text-red-500 text-xs font-semibold flex items-center gap-2">
+              <span className="text-red-500 text-[10px] absolute top-[7em] flex items-center gap-2">
                 <AiFillAlert />
                 No debe contener letras o caracteres especiales.
               </span>
@@ -318,26 +291,21 @@ const Form = ({ onShowRegistered, pdfGenerated }) => {
               ""
             )}
           </label>
-          <label className="flex flex-col gap-2">
+          <label className="flex flex-col gap-2 relative">
             <p className="text-slate-700 text-sm">
-              E-mail <span className="text-red-500">(*)</span>
+              E-mail <span className="text-red-500 font-bold">*</span>
             </p>
             <input
-              className="w-full rounded-md border p-2 text-sm"
+              className="w-full rounded-md border p-2 text-sm shadow-sm"
               value={email}
               onChange={handleEmail}
             />
             {email.trim() === "" ? (
-              <span
-                className={`text-red-500 text-xs font-semibold flex items-center gap-2`}
-              >
-                <FiAlertCircle />
-                Complete este dato.
-              </span>
+              ""
             ) : valiEmail ? (
               ""
             ) : (
-              <span className="text-red-500 text-xs font-semibold flex items-center gap-2">
+              <span className="text-red-500 text-[10px] absolute top-[7em] flex items-center gap-2">
                 <AiFillAlert />
                 La dirección de correo electrónico no es válida.
               </span>
